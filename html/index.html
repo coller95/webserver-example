@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Nginx Server</title>
+    <script>
+        let ws;
+
+        function setupWebSocket() {
+            const wsUrl = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws';
+            ws = new WebSocket(wsUrl);
+
+            ws.onmessage = function(event) {
+                document.getElementById('value').innerText = event.data;
+            };
+
+            ws.onclose = function(event) {
+                console.log('WebSocket disconnected, attempting to reconnect in 5 seconds...');
+                setTimeout(setupWebSocket, 5000);
+            };
+        }
+
+        function addValue() {
+            fetch('/add');
+        }
+
+        function minusValue() {
+            fetch('/minus');
+        }
+
+        window.onload = function() {
+            setupWebSocket();
+        };
+    </script>
+</head>
+<body>
+    <h1>Welcome to My Nginx Server</h1>
+    <p>Value: <span id="value">0</span></p>
+    <button onclick="addValue()">Add</button>
+    <button onclick="minusValue()">Minus</button>
+</body>
+</html>
